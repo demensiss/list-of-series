@@ -8,6 +8,7 @@ Dodaj serial do spisu."""
 my_series = {}
 choice = -1
 
+
 def add_series():
     next = -1
     while next != 0:
@@ -17,13 +18,14 @@ def add_series():
         next = int(input("Dodać jeszcze jeden? \n Y = 1 / N = 0: "))
     return my_series
 
+
 def create_lists(my_series):
     with open('series.txt', 'w') as file:
-        file.write('List of watched series: \n')
         for series, rate in my_series.items():
             file.write(f"Serial: {series}, ocena: {rate} / 10.\n")
     file.close()
     return file
+
 
 def show_series():
     file = open('series.txt', 'r')
@@ -31,9 +33,27 @@ def show_series():
         print(line)
     file.close()
 
-def search_series(my_series):
+
+def search_series():
+    series = ""
+    my_series = {}
     searched_series = input("Podaj nazwę serialu, którego szukasz: ")
-    print(f"Ten serial otrzymał ocenę: {my_series[searched_series]} / 10")
+    file = open('series.txt', 'r')
+    for line in file.readlines():
+        len_line = len(line)
+        series = line[7:(len_line-17)]
+        rate = line[-8]
+        my_series[series] = rate
+
+        if rate == "0":
+            rate = "1"+rate
+
+    for serial in my_series:
+        if serial == searched_series:
+            print(f"Ten serial otrzymał ocenę: {my_series[series]} / 10")
+        else:
+            print("Nie znaleziono serialu.")
+
 
 while choice != 0:
     print()
@@ -50,6 +70,5 @@ while choice != 0:
         search_series()
     elif choice == 3:
         show_series()
-
-
-
+    else:
+        print("Nie ma takiej opcji. Wybierz ponownie.")
