@@ -15,38 +15,44 @@ def add_series():
         name = input("Podaj nazwę serialu, który chcesz zapisać: ")
         rating = input("Podaj ocenę tego serialu (skala od 1 do 10): ")
         my_series[name] = int(rating)
-        next = int(input("Dodać jeszcze jeden? \n Y = 1 / N = 0: "))
+        try:
+            next = int(input("Dodać jeszcze jeden? \n Y = 1 / N = 0: "))
+        except ValueError:
+            print("Wpisz 1 jeśli chcesz dodać kolejny serial lub 0 jeśli nie chcesz tego robić.")
     return my_series
 
 
 def create_lists(my_series):
-    with open('series.txt', 'w') as file:
+    with open('series.txt', 'a') as file:
         for series, rate in my_series.items():
             file.write(f"Serial: {series}, ocena: {rate} / 10.\n")
-    file.close()
     return file
 
 
 def show_series():
-    file = open('series.txt', 'r')
-    for line in file.readlines():
-        print(line)
-    file.close()
+    try:
+        file = open('series.txt', 'r')
+        for line in file.readlines():
+            print(line, end="")
+    finally:
+        file.close()
 
 
 def search_series():
     series = ""
     my_series = {}
     searched_series = input("Podaj nazwę serialu, którego szukasz: ")
-    file = open('series.txt', 'r')
-    for line in file.readlines():
-        len_line = len(line)
-        series = line[7:(len_line-17)]
-        rate = line[-8]
-        my_series[series] = rate
-
-        if rate == "0":
-            rate = "1"+rate
+    try:
+        file = open('series.txt', 'r')
+        for line in file.readlines():
+            len_line = len(line)
+            series = line[7:(len_line-17)]
+            rate = line[-8]
+            if rate == "0":
+                rate = "1" + rate
+            my_series[series] = rate
+    finally:
+        file.close()
 
     for serial in my_series:
         if serial == searched_series:
