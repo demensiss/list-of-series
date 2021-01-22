@@ -1,3 +1,4 @@
-Serial: Czarnobyl, ocena: 10 / 10.
 Serial: Hannibal, ocena: 7 / 10.
-Serial: Orange is new Black, ocena: 6 / 10.
+Serial: Gra o tron, ocena: 9 / 10.
+Serial: Czarnobyl, ocena: 10 / 10.
+Serial: Suits, ocena: 8 / 10.
