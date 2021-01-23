@@ -30,20 +30,16 @@ def create_lists(my_series):
 
 
 def show_series():
-    try:
-        file = open('series.txt', 'r')
+    with open('series.txt', 'r') as file:
         for line in file.readlines():
             print(line, end="")
-    finally:
-        file.close()
 
 
 def search_series():
     series = ""
     my_series = {}
     searched_series = input("Podaj nazwę serialu, którego szukasz: ")
-    try:
-        file = open('series.txt', 'r')
+    with open('series.txt', 'r') as file:
         for line in file.readlines():
             len_line = len(line)
             series = line[7:(len_line-17)]
@@ -51,14 +47,13 @@ def search_series():
             if rate == "0":
                 rate = "1" + rate
             my_series[series] = rate
-    finally:
-        file.close()
 
     for serial in my_series:
-        if serial == searched_series:
-            print(f"Ten serial otrzymał ocenę: {my_series[series]} / 10")
+        if serial.strip() == searched_series.strip():
+            print(f"Ten serial otrzymał ocenę: {my_series[serial]} / 10")
+            break
         else:
-            print("Nie znaleziono serialu.")
+            print("Szukam serialu....")
 
 
 while choice != 0:
