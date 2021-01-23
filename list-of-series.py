@@ -5,71 +5,94 @@ W odpowiedzi podaj jego ocenę.
 Zapytaj użytkownika o dodanie kolejnego serialu i oceny.
 Dodaj serial do spisu."""
 
-my_series = {}
-choice = -1
+# TODO Create unit tests in Pytest
+
+import sys
 
 
-def add_series():
-    next = -1
-    while next != 0:
-        name = input("Podaj nazwę serialu, który chcesz zapisać: ")
-        rating = input("Podaj ocenę tego serialu (skala od 1 do 10): ")
-        my_series[name] = int(rating)
+def add_series(my_series: dict):
+    while True:
+        name = input("Podaj nazwę serialu, który chcesz zapisać: ").strip().title()
         try:
-            next = int(input("Dodać jeszcze jeden? \n Y = 1 / N = 0: "))
-        except ValueError:
-            print("Wpisz 1 jeśli chcesz dodać kolejny serial lub 0 jeśli nie chcesz tego robić.")
+            rate = int(input("Podaj ocenę tego serialu (skala od 1 do 10): ").strip())
+            if rate == 0:
+                rate = 1
+            elif rate > 10:
+                rate = 10
+        except ValueError as e:
+            print(f"Ocena musi być liczbą!")
+            continue
+
+        my_series.update({name: rate})
+
+        more = input("Dodać jeszcze jeden? [T]ak / [N]ie : ").upper()
+        if more == 'T':
+            continue
+        elif more == 'N':
+            break
+        else:
+            print('Wpisz "T", jeśli chcesz dodać kolejny serial lub "N", jeśli nie chcesz tego robić.')
+
     return my_series
 
 
-def create_lists(my_series):
-    with open('series.txt', 'a') as file:
+def save_to_file(filename: str, my_series: dict):
+    with open(filename, 'w') as file:
         for series, rate in my_series.items():
-            file.write(f"Serial: {series}, ocena: {rate} / 10.\n")
-    return file
+            file.write(f"Serial: {series}, ocena: {rate} / 10\n")
 
 
-def show_series():
-    with open('series.txt', 'r') as file:
+def show_series(my_series: dict):
+    for title, rate in my_series.items():
+        print(f"Serial: {title}, ocena: {rate} / 10")
+
+
+def read_file(filename: str):
+    series = {}
+
+    with open(filename, 'r') as file:
         for line in file.readlines():
-            print(line, end="")
+            title, rate = line.split(',')
+            title = title.split(':')[1].title().strip()
+            rate = int(rate.split()[1].strip())
+            series.update({title: rate})
+
+    return series
 
 
-def search_series():
-    series = ""
-    my_series = {}
-    searched_series = input("Podaj nazwę serialu, którego szukasz: ")
-    with open('series.txt', 'r') as file:
-        for line in file.readlines():
-            len_line = len(line)
-            series = line[7:(len_line-17)]
-            rate = line[-8]
-            if rate == "0":
-                rate = "1" + rate
-            my_series[series] = rate
+def search_series(my_series: dict):
+    searched_series = input("Podaj nazwę serialu, którego szukasz: ").title().strip()
 
-    for serial in my_series:
-        if serial.strip() == searched_series.strip():
-            print(f"Ten serial otrzymał ocenę: {my_series[serial]} / 10")
-            break
+    (print(f"Ten serial otrzymał ocenę: {my_series.get(searched_series)} / 10")
+     if searched_series in my_series.keys()
+     else print("Nie ma takiego serialu w bazie."))
+
+
+if __name__ == "__main__":
+    choice = 'default'
+    filename = 'series.txt'
+    my_series = read_file(filename)
+
+    while choice:
+        print()
+        print("1. Dodaj serial")
+        print("2. Szukaj serialu")
+        print("3. Pokaż wszystkie seriale")
+        print("0. Zamknij program")
+        print()
+
+        choice = input("Wybierz co chcesz zrobić: ")
+        print()
+
+        if choice == '1':
+            my_series = add_series(my_series)
+        elif choice == '2':
+            search_series(my_series)
+        elif choice == '3':
+            show_series(my_series)
+        elif choice == '0':
+            save_to_file(filename, my_series)
+            sys.exit(0)
         else:
-            print("Szukam serialu....")
-
-
-while choice != 0:
-    print()
-    print("1. Dodaj serial")
-    print("2. Szukaj serialu")
-    print("3. Pokaż wszystkie seriale")
-    print("0. Zamknij program")
-
-    choice = int(input("Wybierz co chcesz zrobić: "))
-
-    if choice == 1:
-        create_lists(add_series())
-    elif choice == 2:
-        search_series()
-    elif choice == 3:
-        show_series()
-    else:
-        print("Nie ma takiej opcji. Wybierz ponownie.")
+            choice = 'default'
+            print("Nie ma takiej opcji. Wybierz ponownie.")
